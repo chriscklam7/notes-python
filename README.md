@@ -101,3 +101,45 @@ conda rename -n [CURRENT_ENVIRONMENT_NAME] [NEW_ENVIRONMENT_NAME]
 ```
 
 </details>
+
+<br />
+
+## PIP
+
+[https://pypi.org/](https://pypi.org/)
+
+<details>
+<summary>Update PIP</summary>
+
+```shell
+pip install --upgrade pip
+```
+
+</details>
+
+<details>
+<summary>Update packages</summary>
+
+```shell
+pip list -o | cut -f1 -d' ' | tr " " "\n" | awk '{if(NR>=3)print}' | cut -d' ' -f1 | xargs -n1 pip install -U
+```
+
+</details>
+
+<details>
+<summary>Export installed Python packages</summary>
+
+```shell
+pip freeze > requirements.txt
+```
+
+</details>
+
+<details>
+<summary>Install Python packages by exported list</summary>
+
+```shell
+pip install -r requirements.txt
+```
+
+</details>
