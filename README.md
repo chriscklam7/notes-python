@@ -1,6 +1,7 @@
 # Notes of Python
 
-Pattern example
+## Pattern
+
 ```python
 import packagexyz
 
@@ -24,3 +25,77 @@ circle_area = circle.get_area()
 ```python
 /directory-name/file_name.py
 ```
+
+## Conda
+
+<details>
+<summary>List environment</summary>
+
+```shell
+conda env list
+```
+
+</details>
+
+<details>
+<summary>Update</summary>
+
+```shell
+conda update --all
+```
+
+</details>
+
+<details>
+<summary>Create environment with specific Python version</summary>
+
+```shell
+conda create -n [ENVIRONMENT_NAME] python=[SPECIFIC_PYTHON_VERSION]
+```
+
+</details>
+
+<details>
+<summary>Create environment with YAML file</summary>
+
+```shell
+conda create -n [ENVIRONMENT_NAME] -f [YAML_FILE]
+```
+
+</details>
+
+<details>
+<summary>Activate environment</summary>
+
+```shell
+conda activate [ENVIRONMENT_NAME]
+```
+
+</details>
+
+<details>
+<summary>Deactivate environment</summary>
+
+```shell
+conda deactivate
+```
+
+</details>
+
+<details>
+<summary>Remove environment</summary>
+
+```shell
+conda env remove -n [ENVIRONMENT_NAME]
+```
+
+</details>
+
+<details>
+<summary>Rename environment</summary>
+
+```shell
+conda rename -n [CURRENT_ENVIRONMENT_NAME] [NEW_ENVIRONMENT_NAME]
+```
+
+</details>
