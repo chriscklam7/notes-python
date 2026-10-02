@@ -1,28 +1,22 @@
 """
-How to generate string randomly
+String generator
 
-
-Imports
--------
-Python:
+Author: Chris
+Email: chris.cklam7@gmail.com
 """
+
+# Imports
+# Python:
 import sys
 import argparse
 import string
 import secrets
 
-"""
-3rd party:
-"""
+# 3rd party:
+# Internal:
 
-"""
-Internal:
-"""
-
-"""
-Variable:
-"""
-PROGRAM_TITLE = "Generate string randomly"
+# Variables
+APP_TITLE = "String generator"
 
 
 def set_argv_rule():
@@ -152,17 +146,15 @@ def generate_string(gen_str_each_length, gen_str_type, gen_str_number):
     str:Generated string(s)
     """
     type = {}
-    type[1] = secrets.choice(string.ascii_letters + string.digits)
-    type[2] = secrets.choice(string.hexdigits)
+    type[1] = string.ascii_letters + string.digits
+    type[2] = string.hexdigits
     type[3] = secrets.token_urlsafe(gen_str_each_length)
     generated_strings_list = []
     for _ in range(gen_str_number):
         found = False
         while not found:
             if gen_str_type in [1, 2]:
-                generated_string = "".join(
-                    type[gen_str_type] for _ in range(gen_str_each_length)
-                )
+                generated_string = "".join(secrets.choice(type[gen_str_type]) for _ in range(gen_str_each_length))
             elif gen_str_type == 3:
                 generated_string = type[3]
             if generated_string not in generated_strings_list:
@@ -173,8 +165,8 @@ def generate_string(gen_str_each_length, gen_str_type, gen_str_number):
 
 
 def main(args):
+    print(f"{APP_TITLE}\n")
     print(f"args:\n{args}\n")
-
     generated_string = generate_string(args.each_length, args.type, args.number)
     print(f"generated_string:\n\n{generated_string}\n")
 
