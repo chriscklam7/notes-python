@@ -18,12 +18,19 @@ import secrets
 # Variables
 APP_TITLE = "String generator"
 
+"""
+functions:
+set_argv_rule()
+validate_positive_int(number)
+generate_string(gen_str_each_length, gen_str_type, gen_str_number)
+main(args)
+"""
 
-def set_argv_rule():
+def set_argv_rule() -> argparse.Namespace:
     """
-    Set argument rule
-    1. Required
-    2. Optional
+    Set argument rules
+    1. Optional
+    2. Required
 
     Returns
     -------
@@ -33,11 +40,11 @@ def set_argv_rule():
     optional_argument = argparse.ArgumentParser(
         description="", formatter_class=argparse.RawTextHelpFormatter
     )
-    # Optional
+    # 1. Optional
     optional_argument.add_argument(
         "-l",
         "--each_length",
-        type=validate_length_positive_int,
+        type=validate_positive_int,
         help="length of each generated string",
         nargs="?",
         const=1,
@@ -46,7 +53,8 @@ def set_argv_rule():
     optional_argument.add_argument(
         "-t",
         "--type",
-        type=validate_type,
+        type=int,
+        choices=[1, 2, 3],
         help="type of generated string\n\
 1) ASCII letters and digits, e.g.: ABC..XYZ + abc...xyz + 123...890\n\
 2) HEX, e.g.: ABCDEF + 123...890\n\
@@ -64,76 +72,31 @@ def set_argv_rule():
         const=1,
         default=1,
     )
-    # Required
+    # 2. Required
     args = optional_argument.parse_args()
     return args
 
 
-def validate_length_positive_int(number):
+def validate_positive_int(value: str) -> int:
     """
-    Validate positive integer
+    Validate input positive integer
 
     Returns
     -------
     int
     """
     try:
-        input_int = int(number)
-        if input_int <= 0:
-            raise argparse.ArgumentTypeError(
-                "{} is an invalid positive integer".format(number)
-            )
-        elif input_int < 3:
-            raise argparse.ArgumentTypeError(
-                "Length must be equal to or larger than 3".format(number)
-            )
+        number = int(value)
     except ValueError:
+        raise argparse.ArgumentTypeError("{} is not a valid integer".format(value))
+    if number <= 0:
         raise argparse.ArgumentTypeError(
             "{} is an invalid positive integer".format(number)
         )
-    return input_int
+    return number
 
 
-def validate_type(number):
-    """
-    Validate positive integer
-    Range of valid type [1-2]
-
-    Returns
-    -------
-    int
-    """
-    try:
-        input_int = int(number)
-        if input_int < 1 or input_int > 3:
-            raise argparse.ArgumentTypeError("{} is an invalid type".format(number))
-    except ValueError:
-        raise argparse.ArgumentTypeError("{} is an invalid type".format(number))
-    return input_int
-
-
-def validate_positive_int(number):
-    """
-    Validate positive integer
-
-    Returns
-    -------
-    int
-    """
-    try:
-        input_int = int(number)
-        if input_int <= 0:
-            raise argparse.ArgumentTypeError(
-                "{} is an invalid positive integer".format(number)
-            )
-    except ValueError:
-        raise argparse.ArgumentTypeError(
-            "{} is an invalid positive integer".format(number)
-        )
-    return input_int
-
-
-def generate_string(gen_str_each_length, gen_str_type, gen_str_number):
+def generate_string(gen_str_each_length, gen_str_type, gen_str_number) -> str:
     """
     Generate string
     Type of generated string
@@ -164,7 +127,7 @@ def generate_string(gen_str_each_length, gen_str_type, gen_str_number):
     return generated_strings
 
 
-def main(args):
+def main(args) -> None:
     print(f"{APP_TITLE}\n")
     print(f"args:\n{args}\n")
     generated_string = generate_string(args.each_length, args.type, args.number)
