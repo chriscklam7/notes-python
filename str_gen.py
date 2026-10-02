@@ -21,7 +21,7 @@ APP_TITLE = "String generator"
 """
 functions:
 set_argv_rule()
-validate_positive_int(number)
+validate_pos_int(number)
 generate_string(gen_str_each_length, gen_str_type, gen_str_number)
 main(args)
 """
@@ -44,7 +44,7 @@ def set_argv_rule() -> argparse.Namespace:
     optional_argument.add_argument(
         "-l",
         "--each_length",
-        type=validate_positive_int,
+        type=validate_pos_int,
         help="length of each generated string",
         nargs="?",
         const=1,
@@ -66,7 +66,7 @@ def set_argv_rule() -> argparse.Namespace:
     optional_argument.add_argument(
         "-n",
         "--number",
-        type=validate_positive_int,
+        type=validate_pos_int,
         help="number of generated strings",
         nargs="?",
         const=1,
@@ -77,9 +77,9 @@ def set_argv_rule() -> argparse.Namespace:
     return args
 
 
-def validate_positive_int(value: str) -> int:
+def validate_pos_int(value: str) -> int:
     """
-    Validate input positive integer
+    Validate positive integer
 
     Returns
     -------
