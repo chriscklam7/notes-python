@@ -148,4 +148,4 @@ pip install -r requirements.txt
 
 ## Snippets
 
-[./str_gen.py](String generator)
+[String generator](./str_gen.py)
