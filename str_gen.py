@@ -39,11 +39,6 @@ def set_argv_rule() -> argparse.Namespace:
     Set argument rules
     1. Optional
     2. Required
-
-    Returns
-    -------
-    args: Namespace
-        Key-value of arguments
     """
     optional_argument = argparse.ArgumentParser(
         description="", formatter_class=argparse.RawTextHelpFormatter
@@ -90,9 +85,9 @@ def validate_pos_int(value: str) -> int:
     """
     Validate positive integer
 
-    Returns
-    -------
-    int
+    Parameters
+    ----------
+    value:str:input value
     """
     try:
         number = int(value)
@@ -105,18 +100,38 @@ def validate_pos_int(value: str) -> int:
     return number
 
 
-def verify(value: str, gen_type: int, length: int) -> bool:
+def validate_generated_string(value: str, gen_type: int, length: int) -> bool:
     """
-    Verify generated string if matches the requirements
+    Validate generated string if matches the requirements
+
+    Parameters
+    ----------
+    value:str:input value
+    gen_type:int:generated string type
+    length:int:generated string length
     """
-    verified = False
+    valid = False
     # Check length
     if len(value) == length:
-        verified = True
+        valid = True
     # Check characters
     if ALLOWED[gen_type].fullmatch(value):
-        verified = True
-    return verified
+        valid = True
+    # Check password requirements
+    if gen_type == 2:
+        valid = False
+        required = {
+            "lowercase": string.ascii_lowercase,
+            "uppercase": string.ascii_uppercase,
+            "digit": string.digits,
+            "special": PASSWORD_SPECIAL,
+        }
+        required_items = []
+        for name, chars in required.items():
+            required_items.append(any(c in chars for c in value))
+        if all(required_items):
+            valid = True
+    return valid
 
 
 def generate_string(gen_str_each_length, gen_str_type, gen_str_number) -> str:
@@ -128,9 +143,11 @@ def generate_string(gen_str_each_length, gen_str_type, gen_str_number) -> str:
     3) HEX, e.g.: ABCDEF + 123...890
     4) URL-safe, e.g.: ABC..XYZ + abc...xyz + 123...890 + - + _
 
-    Returns
-    -------
-    str:Generated string(s)
+    Parameters
+    ----------
+    gen_str_each_length:int:each generated string length
+    gen_str_type:int:generated string type
+    gen_str_number:int:number of generated strings
     """
     type = {}
     type[1] = string.ascii_letters + string.digits
@@ -143,11 +160,11 @@ def generate_string(gen_str_each_length, gen_str_type, gen_str_number) -> str:
         while not matched:
             if gen_str_type in [1, 2, 3]:
                 generated_string = "".join(secrets.choice(type[gen_str_type]) for _ in range(gen_str_each_length))
-                if verify(generated_string, gen_str_type, gen_str_each_length):
+                if validate_generated_string(generated_string, gen_str_type, gen_str_each_length):
                     matched = True
             elif gen_str_type == 4:
                 generated_string = type[4]
-                if verify(generated_string, gen_str_type, gen_str_each_length):
+                if validate_generated_string(generated_string, gen_str_type, gen_str_each_length):
                     matched = True
             if matched and generated_string not in generated_strings_list:
                 generated_strings_list.append(generated_string)
