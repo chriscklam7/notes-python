@@ -9,8 +9,7 @@ Python:
 import sys
 import argparse
 import string
-import random
-import re
+import secrets
 
 """
 3rd party:
@@ -43,9 +42,9 @@ def set_argv_rule():
     # Optional
     optional_argument.add_argument(
         "-l",
-        "--length",
+        "--each_length",
         type=validate_length_positive_int,
-        help="Length of per generated string",
+        help="length of each generated string",
         nargs="?",
         const=1,
         default=15,
@@ -54,11 +53,10 @@ def set_argv_rule():
         "-t",
         "--type",
         type=validate_type,
-        help="Type of generated string\n\
-            1: ASCII letters and digits, example: \
-                ABC..XYZ + abc...xyz + 123...890\n\
-            2: HEX, example: \
-                ABCDEF + 123...890",
+        help="type of generated string\n\
+1) ASCII letters and digits, e.g.: ABC..XYZ + abc...xyz + 123...890\n\
+2) HEX, e.g.: ABCDEF + 123...890\n\
+3) URL-safe, e.g.: ABC..XYZ + abc...xyz + 123...890 + - + _",
         nargs="?",
         const=1,
         default=1,
@@ -67,7 +65,7 @@ def set_argv_rule():
         "-n",
         "--number",
         type=validate_positive_int,
-        help="Number of generated strings",
+        help="number of generated strings",
         nargs="?",
         const=1,
         default=1,
@@ -75,27 +73,6 @@ def set_argv_rule():
     # Required
     args = optional_argument.parse_args()
     return args
-
-
-def validate_positive_int(number):
-    """
-    Validate positive integer
-
-    Returns
-    -------
-    int
-    """
-    try:
-        input_int = int(number)
-        if input_int <= 0:
-            raise argparse.ArgumentTypeError(
-                "{} is an invalid positive integer".format(number)
-            )
-    except ValueError:
-        raise argparse.ArgumentTypeError(
-            "{} is an invalid positive integer".format(number)
-        )
-    return input_int
 
 
 def validate_length_positive_int(number):
@@ -134,42 +111,63 @@ def validate_type(number):
     """
     try:
         input_int = int(number)
-        if input_int < 1 or input_int > 2:
+        if input_int < 1 or input_int > 3:
             raise argparse.ArgumentTypeError("{} is an invalid type".format(number))
     except ValueError:
         raise argparse.ArgumentTypeError("{} is an invalid type".format(number))
     return input_int
 
 
-def generate_string(gen_str_length, gen_str_type, gen_str_number):
+def validate_positive_int(number):
     """
-    Generate string
-    Type of generated string
-    1) ASCII letters and digits, example: ABC..XYZ + abc...xyz + 123...890
-    2) HEX, example: ABCDEF + 123...890
+    Validate positive integer
 
     Returns
     -------
-    str
-        Generated string(s)
+    int
+    """
+    try:
+        input_int = int(number)
+        if input_int <= 0:
+            raise argparse.ArgumentTypeError(
+                "{} is an invalid positive integer".format(number)
+            )
+    except ValueError:
+        raise argparse.ArgumentTypeError(
+            "{} is an invalid positive integer".format(number)
+        )
+    return input_int
+
+
+def generate_string(gen_str_each_length, gen_str_type, gen_str_number):
+    """
+    Generate string
+    Type of generated string
+    1) ASCII letters and digits, e.g.: ABC..XYZ + abc...xyz + 123...890
+    2) HEX, e.g.: ABCDEF + 123...890
+    3) URL-safe, e.g.: ABC..XYZ + abc...xyz + 123...890 + - + _
+
+    Returns
+    -------
+    str:Generated string(s)
     """
     type = {}
-    type[1] = string.ascii_letters + string.digits
-    type[2] = "ABCDEF" + string.digits
-    pattern = {}
-    pattern[1] = re.compile(r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{" + str(gen_str_length) + ",}$")
-    pattern[2] = re.compile(r"^[A-F\d]+$")
+    type[1] = secrets.choice(string.ascii_letters + string.digits)
+    type[2] = secrets.choice(string.hexdigits)
+    type[3] = secrets.token_urlsafe(gen_str_each_length)
     generated_strings_list = []
     for _ in range(gen_str_number):
         found = False
         while not found:
-            generated_string = "".join(
-                    random.SystemRandom().choice(type[gen_str_type]) for _ in range(gen_str_length)
+            if gen_str_type in [1, 2]:
+                generated_string = "".join(
+                    type[gen_str_type] for _ in range(gen_str_each_length)
                 )
-            re_result = re.search(pattern[gen_str_type], generated_string)
-            if re_result:
+            elif gen_str_type == 3:
+                generated_string = type[3]
+            if generated_string not in generated_strings_list:
                 found = True
-        generated_strings_list.append(generated_string)
+                generated_strings_list.append(generated_string)
     generated_strings = "\n".join(generated_strings_list)
     return generated_strings
 
@@ -177,7 +175,7 @@ def generate_string(gen_str_length, gen_str_type, gen_str_number):
 def main(args):
     print(f"args:\n{args}\n")
 
-    generated_string = generate_string(args.length, args.type, args.number)
+    generated_string = generate_string(args.each_length, args.type, args.number)
     print(f"generated_string:\n\n{generated_string}\n")
 
     print("end")
