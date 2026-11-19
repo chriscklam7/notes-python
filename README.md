@@ -43,7 +43,7 @@ conda env list
 <summary>Update</summary>
 
 ```shell
-conda update -n base conda
+conda self update
 conda update --all
 ```
 
